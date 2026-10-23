@@ -6,4 +6,4 @@ are the tool kept on its own, with the story of how it was made.
 
 | Folder | What it is |
 |---|---|
-| `tv-remote/` | Remote widget for a Sony BRAVIA Android TV. `tv.owl` is the widget, `tv-remote` is the script it runs, `INSTALL-tv.md` is what Claude follows to install it, `transcripts/` holds the two sessions that built it (part 1: PC, part 2: phone). |
+| `tv-remote/` | Remote widget for a Sony BRAVIA Android TV. `tv.owl` is the widget, `tv-remote` is the script it runs, `GUIDE.md` is the step-by-step guide to follow, `INSTALL-tv.md` is what Claude follows on my phone, `transcripts/` holds the two sessions that built it (part 1: PC, part 2: phone). |
