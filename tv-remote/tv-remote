@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+"""Sony Android TV remote for the omalauncher TV widget. See README.md next to this file.
+
+  tv-remote pair            pair with the TV once (the TV shows a code; type it at the prompt)
+  tv-remote key NAME ...    press keys: DPAD_UP DPAD_DOWN DPAD_LEFT DPAD_RIGHT DPAD_CENTER BACK HOME
+                            MENU POWER VOLUME_MUTE VOLUME_UP VOLUME_DOWN MEDIA_PLAY_PAUSE SETTINGS ...
+                            (Android KEYCODE_ names without the prefix; MUTE is the microphone)
+  tv-remote app LINK        open an app link (for example https://www.netflix.com/title)
+  tv-remote status          print the TV's model and the app on screen as JSON
+
+Config (never on a command line):
+  ~/.config/tv-remote/host       the TV's IP address, one line
+  ~/.config/tv-remote/cert.pem   made by `pair`, chmod 600
+  ~/.config/tv-remote/key.pem    made by `pair`, chmod 600
+"""
+import asyncio
+import json
+import os
+import sys
+
+from androidtvremote2 import AndroidTVRemote, CannotConnect, ConnectionClosed, InvalidAuth
+
+CONF = os.environ.get("TV_REMOTE_CONFIG", os.path.expanduser("~/.config/tv-remote"))
+CERT = os.path.join(CONF, "cert.pem")
+KEY = os.path.join(CONF, "key.pem")
+
+
+def host():
+    try:
+        with open(os.path.join(CONF, "host")) as f:
+            return f.readline().strip()
+    except OSError:
+        sys.exit("no TV address: put the IP in %s/host" % CONF)
+
+
+def remote():
+    os.makedirs(CONF, mode=0o700, exist_ok=True)
+    return AndroidTVRemote("omalauncher", CERT, KEY, host())
+
+
+async def pair():
+    r = remote()
+    await r.async_generate_cert_if_missing()
+    for p in (CERT, KEY):
+        os.chmod(p, 0o600)
+    await r.async_start_pairing()
+    code = input("Code shown on the TV: ").strip()
+    await r.async_finish_pairing(code)
+    print("paired")
+
+
+async def connect():
+    r = remote()
+    if not os.path.exists(CERT):
+        sys.exit("not paired: run `tv-remote pair`")
+    # The TV takes one remote at a time, so a status poll and a key press that overlap make
+    # one of them fail; try a few times before calling it offline.
+    for attempt in range(3):
+        try:
+            await r.async_connect()
+            break
+        except InvalidAuth:
+            sys.exit("not paired: run `tv-remote pair`")
+        except (CannotConnect, ConnectionClosed, OSError):
+            if attempt == 2:
+                sys.exit("offline")
+            await asyncio.sleep(0.5)
+    # The TV sends its volume and the app on screen right after the handshake, and a key
+    # sent before it has settled (a Sony BRAVIA drops one sent within ~300 ms) is lost.
+    for _ in range(10):
+        if r.volume_info is not None and r.current_app is not None:
+            break
+        await asyncio.sleep(0.1)
+    await asyncio.sleep(0.4)
+    return r
+
+
+async def main(argv):
+    cmd = argv[0] if argv else "status"
+    if cmd == "pair":
+        return await pair()
+    r = await connect()
+    try:
+        if cmd == "key":
+            for k in argv[1:]:
+                r.send_key_command(k)
+                await asyncio.sleep(0.15)
+        elif cmd == "app":
+            r.send_launch_app_command(argv[1])
+        elif cmd == "status":
+            print(json.dumps({"on": r.is_on, "app": r.current_app, "volume": r.volume_info,
+                              "device": r.device_info}))
+        else:
+            sys.exit(__doc__)
+        await asyncio.sleep(0.4)
+    finally:
+        r.disconnect()
+
+
+asyncio.run(main(sys.argv[1:]))

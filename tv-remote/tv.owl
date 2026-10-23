@@ -1,0 +1,92 @@
+widget "tv" {
+  meta { description: "Sony Android TV remote: D-pad, OK, back, home, volume, mute, power, play and app shortcuts. Needs the TV on the same Wi-Fi."; version: "2.0"; license: "MIT"; category: "system"; owl: 12 }
+  size: 6x9
+  minSize: 4x5
+  requires { pacman: ["python"] }
+
+  // tv-remote (widgets/scripts/tv-remote in this repo) sends one key over the network per tap.
+  source s = cmd("~/.local/bin/tv-remote status") every 30s json timeout 10s status
+  source now = clock every 1s
+  state last = null
+  state clearAt = 0
+
+  let tv = s != null && s.ok ? s.out : null
+  let vol = tv != null ? tv.volume : null
+  let on = tv != null && tv.on
+  let status = s == null ? "…" : !s.ok ? "offline" : !on ? "standby" : vol == null ? "on" : vol.muted ? "muted" : "vol ${vol.level}"
+  let names = {"com.google.android.tvlauncher": "home", "com.netflix.ninja": "Netflix", "com.google.android.youtube.tv": "YouTube", "com.amazon.amazonvideo.livingroom": "Prime Video", "com.disney.disneyplus": "Disney+", "com.plexapp.android": "Plex", "com.spotify.tv.android": "Spotify", "com.sony.dtv.tvx": "TV"}
+  let app = tv != null && on && tv.app != null ? (names[tv.app] ?? last(split(tv.app, "."))) : null
+  let big = rows != null && rows >= 7
+
+  at clearAt { last = null; clearAt = 0 }
+
+  // A key: frosted glass, lit in its color while the press is on its way.
+  component Key(label, key, tint, hot, size) {
+    Box {
+      weight: 1; fill: height; align: center
+      radius: 14; frost: 18
+      background: hot ? alpha(tint, 0.4) : alpha(surface, 0.5)
+      border: 1; borderColor: hot ? tint : alpha(tint, 0.35)
+      animate background: tween(200ms, "out")
+      onTap: { haptic(); last = key; clearAt = now + 1; run("~/.local/bin/tv-remote key ${sh(key)}") }
+      Text { text: label; color: tint; fontSize: size; align: center; bold: size > 20 }
+    }
+  }
+  component App(label, link, tint) {
+    Box {
+      weight: 1; fill: height; align: center
+      radius: 14; frost: 18
+      background: last == link ? alpha(tint, 0.4) : alpha(tint, 0.12)
+      border: 1; borderColor: alpha(tint, 0.5)
+      animate background: tween(200ms, "out")
+      onTap: { haptic(); last = link; clearAt = now + 1; run("~/.local/bin/tv-remote app ${sh(link)}") }
+      Text { text: label; color: tint; fontSize: big ? 18 : 15; align: center; bold: true }
+    }
+  }
+
+  Column {
+    gap: 8
+    fill: true
+    Row {
+      align: center
+      onTap: refresh()
+      Column {
+        gap: 0; weight: 1
+        Text { text: "tv"; style: muted }
+        Text { text: app ?? (s == null ? "connecting" : !s.ok ? (s.err != "" ? s.err : "can't reach the TV") : "off"); style: small; color: app != null ? foreground : muted; maxLines: 1 }
+      }
+      Text { text: status; style: title; color: on ? accent : s != null && !s.ok ? red : muted; width: 170; align: end }
+    }
+    Row { gap: 8; weight: 1
+      Key { label: "back"; key: "BACK"; tint: muted; hot: last == "BACK"; size: 16 }
+      Key { label: "▲"; key: "DPAD_UP"; tint: accent; hot: last == "DPAD_UP"; size: 28 }
+      Key { label: "home"; key: "HOME"; tint: muted; hot: last == "HOME"; size: 16 }
+    }
+    Row { gap: 8; weight: 1
+      Key { label: "◀"; key: "DPAD_LEFT"; tint: accent; hot: last == "DPAD_LEFT"; size: 28 }
+      Key { label: "OK"; key: "DPAD_CENTER"; tint: accent; hot: last == "DPAD_CENTER"; size: 28 }
+      Key { label: "▶"; key: "DPAD_RIGHT"; tint: accent; hot: last == "DPAD_RIGHT"; size: 28 }
+    }
+    Row { gap: 8; weight: 1
+      Key { label: "menu"; key: "MENU"; tint: muted; hot: last == "MENU"; size: 16 }
+      Key { label: "▼"; key: "DPAD_DOWN"; tint: accent; hot: last == "DPAD_DOWN"; size: 28 }
+      Key { label: "settings"; key: "SETTINGS"; tint: muted; hot: last == "SETTINGS"; size: 16 }
+    }
+    Row { gap: 8; weight: 1
+      Key { label: "vol −"; key: "VOLUME_DOWN"; tint: foreground; hot: last == "VOLUME_DOWN"; size: 22 }
+      Key { label: vol != null && vol.muted ? "unmute" : "mute"; key: "VOLUME_MUTE"; tint: yellow; hot: last == "VOLUME_MUTE" || (vol != null && vol.muted); size: 16 }
+      Key { label: "vol +"; key: "VOLUME_UP"; tint: foreground; hot: last == "VOLUME_UP"; size: 22 }
+    }
+    Row { gap: 8; weight: 1
+      Key { label: "▶❚❚ play"; key: "MEDIA_PLAY_PAUSE"; tint: foreground; hot: last == "MEDIA_PLAY_PAUSE"; size: 16 }
+      Key { label: "⏻ power"; key: "POWER"; tint: red; hot: last == "POWER"; size: 16 }
+    }
+    if rows == null || rows >= 6 {
+      Row { gap: 8; weight: 1
+        App { label: "Netflix"; link: "https://www.netflix.com/title"; tint: red }
+        App { label: "YouTube"; link: "https://www.youtube.com"; tint: orange }
+        App { label: "Prime"; link: "https://app.primevideo.com"; tint: cyan }
+      }
+    }
+  }
+}
