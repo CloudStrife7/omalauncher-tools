@@ -1,0 +1,4 @@
+the back of a big flat TV seen at an angle, with ports and a tangle of cables. Zach is squeezed behind it, peeking out around its side, a flashlight in his teeth, reaching toward the ports. Searching for a lost remote.
+characters: Zach
+scene: TV remote guide, keyed sprite on transparent
+objects: gf-3-behind-tv

@@ -1,0 +1,4 @@
+an open laptop. Zach sits behind it typing with both hands, leaning in, focused. The laptop screen faces the viewer and shows a glowing teal input box with a blinking cursor (a plain box, no letters). A small floating TV icon (a symbol) above the laptop glows orange.
+characters: Zach
+scene: TV remote guide, keyed sprite on transparent
+objects: gf-6-pair-code

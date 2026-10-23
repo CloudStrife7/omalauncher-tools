@@ -1,0 +1,4 @@
+the bottom front edge of a dark couch, only a short section, with a gap underneath. Zach lies on his side on the floor line with one arm stretched far under the couch, a small flashlight in his other hand, one eye squinting into the gap. A few dust bunnies. Searching for a lost TV remote.
+characters: Zach
+scene: TV remote guide, keyed sprite on transparent
+objects: gf-1-under-couch

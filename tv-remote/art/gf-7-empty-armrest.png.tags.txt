@@ -1,0 +1,4 @@
+a whole dark fabric couch, instantly recognizable as a couch: a tall backrest, two thick seat cushions, and a rounded armrest on each end, short wooden legs, seen from the front at a slight angle, wide in the frame. Zach stands in front of the left end of the couch, one hand on the back of his neck and his head tilted, a confused, puzzled posture, looking at the couch's RIGHT armrest. The right armrest's flat top is EMPTY. An orange DASHED LINE made of small pixel dashes runs from near his head to the right armrest top, and on that armrest top sits an empty rectangle drawn only as an orange dashed outline, about the size of a TV remote, marking where the remote should be. Nothing inside the rectangle. A small floating pixel question mark (a symbol, not a letter) above his head. Landscape about 4:3.
+characters: Zach
+scene: TV remote guide, keyed sprite on transparent
+objects: gf-7-empty-armrest

@@ -1,0 +1,4 @@
+a modern smartphone held up in Zach's hand, screen toward the viewer. The screen shows a glowing remote-control widget: a round orange D-pad with four arrows and a centre OK button, plus small round buttons for home, back and volume. Zach looks relaxed with a confident half-smile, thumb on the screen. No remote in the picture.
+characters: Zach
+scene: TV remote guide, keyed sprite on transparent
+objects: gf-5-phone-widget

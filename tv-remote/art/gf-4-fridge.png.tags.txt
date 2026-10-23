@@ -1,0 +1,4 @@
+an open white fridge, shelves visible, cold blue-white light spilling out. Zach stands in front of it holding a milk carton, looking confused at the shelves. A small floating pixel question mark (a symbol, not a letter) above his head.
+characters: Zach
+scene: TV remote guide, keyed sprite on transparent
+objects: gf-4-fridge

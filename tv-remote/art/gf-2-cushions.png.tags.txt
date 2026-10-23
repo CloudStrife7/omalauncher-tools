@@ -1,0 +1,4 @@
+a dark couch seat with two thick cushions. Zach sits on it leaning forward, both arms pushed deep between the cushions, one cushion lifted in the air. A coin, a fork and a game cartridge are popping out of the gap. Puzzled frown.
+characters: Zach
+scene: TV remote guide, keyed sprite on transparent
+objects: gf-2-cushions
