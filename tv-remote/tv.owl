@@ -14,7 +14,7 @@ widget "tv" {
   let vol = tv != null ? tv.volume : null
   let on = tv != null && tv.on
   let status = s == null ? "…" : !s.ok ? "offline" : !on ? "standby" : vol == null ? "on" : vol.muted ? "muted" : "vol ${vol.level}"
-  let names = {"com.google.android.tvlauncher": "home", "com.netflix.ninja": "Netflix", "com.google.android.youtube.tv": "YouTube", "com.amazon.amazonvideo.livingroom": "Prime Video", "com.disney.disneyplus": "Disney+", "com.plexapp.android": "Plex", "com.spotify.tv.android": "Spotify", "com.sony.dtv.tvx": "TV"}
+  let names = {"com.google.android.tvlauncher": "home", "io.freemytv": "home", "com.netflix.ninja": "Netflix", "com.google.android.youtube.tv": "YouTube", "com.amazon.amazonvideo.livingroom": "Prime Video", "com.disney.disneyplus": "Disney+", "com.plexapp.android": "Plex", "com.spotify.tv.android": "Spotify", "com.sony.dtv.tvx": "TV"}
   let app = tv != null && on && tv.app != null ? (names[tv.app] ?? last(split(tv.app, "."))) : null
   let big = rows != null && rows >= 7
 
