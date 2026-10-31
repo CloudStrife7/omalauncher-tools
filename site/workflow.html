@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>omalauncher-tools Build Log</title>
+<meta name="description" content="How the TV remote widget was built: a lost remote, a network scan, an expiring pairing code, a widget that did nothing, and the fixes. Dated, from the repo's own history.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><a href="index.html">omalauncher<b>-tools</b></a><span class="sub"> &middot; build log</span></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="workflow.html" aria-current="page">Build Log</a>
+      <a href="milestones.html">Milestones</a>
+      <a href="https://github.com/CloudStrife7/omalauncher-tools" class="wide">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="page-head story">
+      <div>
+        <p class="eyebrow">The build log &middot; one person and Claude Code</p>
+        <h1>From a lost remote<br><span class="ember">to a widget that works</span></h1>
+        <p class="lede">The remote went missing, and so did the backup. This is how a phone became the replacement: two Claude Code sessions, one on a PC and one on the phone itself, both saved word for word in the repo's <a href="https://github.com/CloudStrife7/omalauncher-tools/tree/main/tv-remote/transcripts">transcripts folder</a>. Dates are when it happened.</p>
+      </div>
+      <img src="assets/img/gf-7-empty-armrest.webp" width="1100" height="827" alt="Zach scratching his head beside a dark couch, a dashed orange line pointing at an empty dashed outline on the armrest where the remote should be">
+    </div>
+
+    <ol class="log">
+      <li class="entry">
+        <time datetime="2026-10-16">10-16-2026</time>
+        <div class="body">
+          <h3>"Can we make my TV run faster?"</h3>
+          <p>It started as a question about speeding up a Sony X900F, an Android TV that is still laggy even with its animations turned off. The first answer was a list of safe tweaks and a nudge towards a streaming stick. The owner pushed back, and that became a standing rule:</p>
+          <p class="quote">Never talk me out of hacking my own technology.</p>
+          <p>The same session looked at omalauncher, the Omarchy-style Android launcher with an Arch Linux inside it, and settled that it belonged on the phone, not the TV.</p>
+        </div>
+      </li>
+
+      <li class="entry">
+        <time datetime="2026-10-23">10-23-2026</time>
+        <div class="body">
+          <h3>Finding a TV you cannot see</h3>
+          <p>With no remote, there was no way to read the TV's IP address off its own menus, and the Google TV app could not find it either. Claude Code on the PC scanned the home network instead.</p>
+          <ul>
+            <li>The tell is port 6466, the Android TV remote port. Speakers and displays on the network only showed port 8009.</li>
+            <li>The first guess was wrong: a device with only AirPlay open looked like a Sony but was not the TV.</li>
+            <li>The right one was confirmed later, once paired: it reported itself as a BRAVIA 4K GB ATV3.</li>
+          </ul>
+        </div>
+      </li>
+
+      <li class="entry">
+        <time datetime="2026-10-23">10-23-2026</time>
+        <div class="body">
+          <h3>Pairing, the step only a person can do</h3>
+          <p>The TV shows a six-character code that has to be typed back in seconds. Claude cannot see the TV, so the owner read each code off the screen and sent it. The first codes expired before they arrived, and then the TV stuck on the old pairing box and would not offer a new one. Unplugging the TV and plugging it back in cleared it, and the next code went through. From then on the PC could press buttons on the TV.</p>
+          <figure>
+            <img src="assets/img/gf-6-pair-code.webp" width="800" height="598" alt="Zach at a laptop, typing into a glowing teal input box, a small TV symbol glowing orange above the screen">
+            <figcaption>From the guide: you type the code, Claude cannot.</figcaption>
+          </figure>
+        </div>
+      </li>
+
+      <li class="entry key-moment">
+        <time datetime="2026-10-23">10-23-2026</time>
+        <div class="body">
+          <h3>The widget, and one sentence to install it</h3>
+          <p>Next request: a widget on omalauncher to control the TV. Claude read an existing widget to match its style, then wrote three files: <code>tv-remote</code>, a Python script that sends one key per call, <code>tv.owl</code>, the widget, and a README. The script was tested against the real TV from the PC and pushed to the phone's config repo.</p>
+          <p>The owner wanted it simple, so the install became a file Claude follows on the phone, <code>INSTALL-tv.md</code>. On the phone you type one sentence, then pair by hand.</p>
+          <p class="quote">All I need to do is type one thing, and then pair it myself with the TV.</p>
+        </div>
+      </li>
+
+      <li class="entry key-moment">
+        <time datetime="2026-10-23">10-23-2026</time>
+        <div class="body">
+          <h3>On the phone: it looked fine and did nothing</h3>
+          <p>The second session ran inside omalauncher's own terminal on the phone. Every tap exited cleanly and the TV ignored all of them. Four things were wrong:</p>
+          <ul>
+            <li>The BRAVIA drops a key sent within about 300 ms of connecting. The script now waits for the TV's first state, then settles before sending.</li>
+            <li>The mute button sent MUTE, which is the microphone. The TV's mute is VOLUME_MUTE.</li>
+            <li>The widget declared owl 7, under which a status source is silently ignored, so the header always read "offline". It now declares owl 12.</li>
+            <li>The TV accepts one remote connection at a time, so a status poll overlapping a tap failed one of them. The script retries a few times before calling it offline.</li>
+          </ul>
+          <p>Then the redesign the owner asked for, more user friendly and visually appealing with Omarchy swag, filling the 6&times;9 tile he had stretched it to: frosted keys that take the theme's colours, the D-pad in the accent colour, a key that lights up while its press travels, a live header with the volume and the app on screen, and Netflix, YouTube and Prime shortcuts. The check that counted: the TV's volume climbed from 12 to 14 while the work went on, so taps from the phone were reaching it.</p>
+        </div>
+      </li>
+
+      <li class="entry">
+        <time datetime="2026-10-23">10-23-2026</time>
+        <div class="body">
+          <h3>Its own repo, a guide, and Zach</h3>
+          <p>Both sessions were saved as transcripts, and the widget moved into this repo, omalauncher-tools, so each tool keeps its own folder and its own story. <code>GUIDE.md</code> was written for someone else to follow, then rendered into an illustrated HTML page and PDF with seven pictures of Zach hunting for the remote under the couch, between the cushions, behind the TV and in the fridge. The same evening the widget learned to call the Free My TV home screen "home".</p>
+          <figure>
+            <img src="assets/img/gf-1-under-couch.webp" width="800" height="437" alt="Zach lying on the floor, one arm reaching under a dark couch, a small flashlight in his other hand">
+            <figcaption>From the guide: step one of the search.</figcaption>
+          </figure>
+        </div>
+      </li>
+
+      <li class="entry">
+        <time datetime="2026-10-31">10-31-2026</time>
+        <div class="body">
+          <h3>Worth it, and what "done" means</h3>
+          <p>On 10-23-2026 the tools went through the owner's worth gate: Use 5, Value 5, Setup 1, Upkeep 1, Risk 2, so (5&times;5) / (1+1+2) = 6.3, a GO with no kill date. One gate covers this repo and the phone's config repo. The record was written down in <code>WORTH.md</code> on 10-31.</p>
+          <p>Then three milestones, each closed only by proof: <b>M1</b>, used every day for two weeks with no code change; <b>M2</b>, someone else uses it for a week; and <b>LATER</b>. They are on the <a href="milestones.html">milestones page</a>, read live from GitHub.</p>
+        </div>
+      </li>
+    </ol>
+
+    <section class="section tight">
+      <p class="label">cat RULES</p>
+      <h2>What this build taught</h2>
+      <div class="rules">
+        <div class="tile"><h3>Prove it on the device</h3><p>An exit code of 0 meant nothing here. The volume number changing on the TV is the test.</p></div>
+        <div class="tile"><h3>The human step stays human</h3><p>Pairing needs eyes on the TV. The install stops and hands that one step over, every time.</p></div>
+        <div class="tile"><h3>One sentence to install</h3><p>A file Claude follows on the phone beats a list of commands to type with your thumbs.</p></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="row">
+      <span>omalauncher-tools &middot; build log</span>
+      <span><a href="index.html">&larr; Home</a> &nbsp; <a href="https://github.com/CloudStrife7/omalauncher-tools/commits/main">Every commit</a></span>
+    </div>
+    <p class="credits">Drawn from the repo's commits, GUIDE.md, WORTH.md and the two saved session transcripts. Zach art generated for the guide.</p>
+  </div>
+</footer>
+</body>
+</html>

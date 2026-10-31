@@ -1,0 +1,48 @@
+name: Pages - build and deploy the public site
+
+# The public site is site/ as-is (static pages, no build step), plus site/data/milestones.json,
+# baked at deploy time by scripts/bake_milestones.py from this repo's GitHub milestones and issues.
+# Modelled on RetroRoads' pages.yml. The milestones page is the shared template from
+# !index/shared/templates/project-site (re-run its install.py to update; never edit the copy).
+#
+# Needs Settings > Pages > Source = "GitHub Actions" (build_type=workflow).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Bake milestones (site/data/milestones.json, from this repo's GitHub milestones)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/bake_milestones.py --repo ${{ github.repository }} --out site/data
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

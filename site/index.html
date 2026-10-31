@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>omalauncher-tools</title>
+<meta name="description" content="Widgets and helper scripts for omalauncher, the Android launcher, one folder per tool. First tool: a remote for a Sony Android TV, for the day the real remote goes missing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><a href="index.html">omalauncher<b>-tools</b></a></div>
+    <nav>
+      <a href="index.html" aria-current="page" class="wide">Home</a>
+      <a href="workflow.html">Build Log</a>
+      <a href="milestones.html">Milestones</a>
+      <a href="https://github.com/CloudStrife7/omalauncher-tools" class="wide">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Widgets for omalauncher &middot; one folder per tool</p>
+        <h1>Lost the TV remote?<br><span class="ember">Put one on your home screen.</span></h1>
+        <p class="lede">omalauncher-tools holds widgets and helper scripts for <a href="https://github.com/SimonSchubert/omalauncher">omalauncher</a>, an Android launcher with an optional Arch Linux inside it. Each tool lives in its own folder with its guide and the story of how it was made. The first one turns a phone into a remote for a Sony Android TV.</p>
+        <div class="actions">
+          <a class="btn primary" href="#install">Install the TV remote</a>
+          <a class="btn quiet" href="workflow.html">How it was built</a>
+        </div>
+        <div class="prompt" aria-label="The one sentence you give Claude Code on the phone">
+          <span class="caret">&gt;</span>
+          <code>Clone https://github.com/CloudStrife7/omalauncher-tools, then follow tv-remote/INSTALL-tv.md to install the TV remote widget. My TV's IP is YOUR_TV_IP. Do not pair. I will do that myself.</code>
+        </div>
+        <p class="prompt-note">The whole install, typed once into Claude Code in omalauncher's terminal. Pairing is the one step you do by hand.</p>
+      </div>
+      <figure>
+        <img src="assets/img/gf-5-phone-widget.webp" width="1100" height="859" alt="Zach, red hair and sunglasses, leaning back and holding up a phone that shows a glowing orange remote control">
+        <figcaption>Illustration from the guide, not a screenshot</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="tools">
+    <div class="wrap">
+      <p class="label">ls tools/</p>
+      <h2>The tools</h2>
+      <p class="intro">The phone's live copy of every widget is kept in a separate config repo. These folders are each tool kept on its own, with the guide to follow and the sessions that built it.</p>
+
+      <div class="tile focus" style="margin-top:var(--space-6)">
+        <div class="tool">
+          <div>
+            <h3 style="font-size:24px">tv-remote <span class="pill">working</span></h3>
+            <p>A remote widget for a Sony BRAVIA Android TV. It sends remote keys over Wi-Fi to the TV's Android TV remote port, so a phone on the same network can drive the TV with no app installed on the TV.</p>
+            <p class="muted">Tested on one TV: a Sony BRAVIA X900F (model BRAVIA 4K GB ATV3).</p>
+            <dl>
+              <dt>tv.owl</dt><dd>The widget. One <code>.owl</code> file, declares <code>owl: 12</code>, 6&times;9 tiles, shrinks to 4&times;5.</dd>
+              <dt>tv-remote</dt><dd>The script it runs. Commands: <code>pair</code>, <code>key</code>, <code>app</code>, <code>status</code>.</dd>
+              <dt>GUIDE.md</dt><dd>The step-by-step guide, also as an illustrated HTML page and a PDF.</dd>
+              <dt>INSTALL-tv.md</dt><dd>What Claude follows on the phone to install it.</dd>
+              <dt>transcripts/</dt><dd>The two sessions that built it. Part 1 on a PC, part 2 on the phone.</dd>
+            </dl>
+            <div class="actions">
+              <a class="btn" href="https://github.com/CloudStrife7/omalauncher-tools/blob/main/tv-remote/GUIDE.md">Read the guide</a>
+              <a class="btn quiet" href="https://github.com/CloudStrife7/omalauncher-tools/tree/main/tv-remote">Open the folder</a>
+            </div>
+          </div>
+          <figure class="owl-wrap" style="margin:0">
+            <div class="owl" role="img" aria-label="Drawing of the tv widget: a header reading tv, home, vol 14, then rows of rounded keys: back, up, home; left, OK, right; menu, down, settings; vol minus, mute, vol plus; play, power; Netflix, YouTube, Prime">
+              <div class="owl-head">
+                <div><div class="t">tv</div><div class="a">home</div></div>
+                <div class="s">vol 14</div>
+              </div>
+              <div class="owl-row"><span class="key muted">back</span><span class="key accent big">&#9650;</span><span class="key muted">home</span></div>
+              <div class="owl-row"><span class="key accent big">&#9664;</span><span class="key accent big">OK</span><span class="key accent big">&#9654;</span></div>
+              <div class="owl-row"><span class="key muted">menu</span><span class="key accent big">&#9660;</span><span class="key muted">settings</span></div>
+              <div class="owl-row"><span class="key big" style="font-size:16px">vol &minus;</span><span class="key mute">mute</span><span class="key big hot" style="font-size:16px">vol +</span></div>
+              <div class="owl-row"><span class="key">&#9654;&#10074;&#10074; play</span><span class="key power">&#9211; power</span></div>
+              <div class="owl-row"><span class="key app nf">Netflix</span><span class="key app yt">YouTube</span><span class="key app pv">Prime</span></div>
+            </div>
+            <figcaption>A drawing of tv.owl's layout, keys and colours read from its source, in the greek-noir theme the phone runs. The header shows what the preview read on <span class="nw">10-23-2026</span>: home on screen, volume 14.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="install">
+    <div class="wrap">
+      <p class="label">cat tv-remote/GUIDE.md</p>
+      <h2>Turn your phone into a TV remote</h2>
+      <p class="intro"><b>You need:</b> an Android TV, an Android phone with omalauncher and Claude Code, and one shared Wi-Fi. <b>You get:</b> a <code>tv.owl</code> widget, a <code>tv-remote</code> command, and a pairing with your TV that lasts.</p>
+      <p class="intro muted">Skip this if you have a working remote, the Google TV app finds your TV, or a USB keyboard works in the TV's USB port. Try those first.</p>
+
+      <ol class="steps">
+        <li>
+          <div>
+            <h3>Turn on debug mode, while you still have a remote</h3>
+            <p>Home, then Settings &gt; Device Preferences &gt; About. Press OK on Build 7 times. Back, open Developer options, turn on USB debugging. It is the one step you cannot do afterwards without a remote.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Find the TV's IP address</h3>
+            <p>Without a remote you cannot read it off the TV. Have Claude Code on a computer scan your network: the TV is the device with port 6466 open, the Android TV remote port. Give it a fixed IP in your router.</p>
+            <div class="cmd">Scan my home network for an Android TV. Ping-sweep my subnet, then check which devices have port 6466 or 6467 open. Tell me their IP addresses. Do not print anything else.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Install the widget on the phone</h3>
+            <p>In omalauncher's terminal, start Claude Code and give it the one sentence at the top of this page. It installs Python and the remote library, saves the TV's IP, and copies the widget into omalauncher's widgets folder.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Pair once. You type the code.</h3>
+            <p>The TV shows a 6-character code. Type it straight away, because it expires. Claude cannot see the TV, so this step is yours. If the TV hangs on an old pairing box, unplug it, plug it back in, and pair again.</p>
+            <div class="cmd">tv-remote pair</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Tap vol + and watch the number change</h3>
+            <p>The widget's header shows the TV's state and volume. If the number climbs, the key reached the TV. A tap takes about two seconds, because each one opens a fresh connection.</p>
+            <div class="cmd">tv-remote status
+tv-remote key VOLUME_UP</div>
+            <p class="zach-says" style="margin-top:var(--space-3)">Test with the volume number, not the exit code.</p>
+          </div>
+        </li>
+      </ol>
+      <p class="muted" style="margin-top:var(--space-5)">Keep <code>~/.config/tv-remote/key.pem</code> private: it is the key to your TV. The full guide, with every detail, is <a href="https://github.com/CloudStrife7/omalauncher-tools/blob/main/tv-remote/GUIDE.md">GUIDE.md</a>, or the illustrated <a href="https://github.com/CloudStrife7/omalauncher-tools/blob/main/tv-remote/guide/guide.pdf">PDF</a>.</p>
+    </div>
+  </section>
+
+  <section class="section" id="gotchas">
+    <div class="wrap">
+      <div class="story">
+        <div>
+          <p class="label">grep -i broke</p>
+          <h2>The first version did nothing</h2>
+          <p class="intro">It looked right, every tap exited cleanly, and the TV ignored all of them. These are the fixes, already in the script and widget you install. They are here for the day you change it.</p>
+        </div>
+        <img src="assets/img/gf-4-fridge.webp" width="700" height="600" alt="Zach in front of an open fridge, holding a milk carton, a question mark over his head">
+      </div>
+      <div class="gotchas">
+        <div class="gotcha"><div class="broke">A key sent right after connecting did nothing.</div><div class="fix">The BRAVIA drops a key sent within about 300 ms of connecting. The script waits for the TV's first state, then a short pause.</div></div>
+        <div class="gotcha"><div class="broke">The mute button muted nothing.</div><div class="fix">The key MUTE is the microphone. The TV's mute is VOLUME_MUTE.</div></div>
+        <div class="gotcha"><div class="broke">The header said offline while the TV was on.</div><div class="fix">A status source is silently ignored under owl 7. The widget declares owl 12.</div></div>
+        <div class="gotcha"><div class="broke">A status check and a tap failed when they overlapped.</div><div class="fix">The TV takes one remote connection at a time. The script retries a few times before it says offline.</div></div>
+        <div class="gotcha"><div class="broke">The pairing code was rejected, then new pairings hung.</div><div class="fix">The code had expired and the TV stayed on the old pairing box. Unplug the TV, plug it back in, pair again.</div></div>
+        <div class="gotcha"><div class="broke">The network scan picked the wrong device.</div><div class="fix">A device with only AirPlay open was not the TV. The right one had port 6466. <code>tv-remote status</code> prints the model.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="status">
+    <div class="wrap">
+      <p class="label">tv-remote status</p>
+      <h2>Where it stands</h2>
+      <div class="status">
+        <div class="stat"><div class="k">Tools</div><div class="v">1</div><div class="n">tv-remote, on the owner's phone since <span class="nw">10-23-2026</span></div></div>
+        <div class="stat"><div class="k">Worth gate</div><div class="v sage">GO &middot; 6.3</div><div class="n">Use 5, Value 5, Setup 1, Upkeep 1, Risk 2. No kill date.</div></div>
+        <div class="stat"><div class="k">Milestone 1</div><div class="v ember">Two weeks</div><div class="n">of daily use with no code change. Last change: <span class="nw">10-23-2026</span>.</div></div>
+        <div class="stat"><div class="k">Tested on</div><div class="v">1 TV</div><div class="n">Sony BRAVIA X900F. Other Android TVs: not tried yet.</div></div>
+      </div>
+      <a class="btn" href="milestones.html">See the milestones</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="row">
+      <span>omalauncher-tools &middot; widgets for the home screen</span>
+      <span><a href="workflow.html">How it was built &rarr;</a> &nbsp; <a href="https://github.com/CloudStrife7/omalauncher-tools">Source on GitHub</a></span>
+    </div>
+    <p class="credits">omalauncher is its own project: <a href="https://github.com/SimonSchubert/omalauncher">github.com/SimonSchubert/omalauncher</a>. The remote speaks the Android TV remote protocol through the androidtvremote2 Python library. Colours: the greek-noir Omarchy theme the phone runs. Zach art generated for the guide. Not affiliated with Sony or Google.</p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,60 @@
+/* OMALAUNCHER-TOOLS — styles.css: tokens + reset (layout lives in site.css).
+
+   Palette: the owner's phone home screen. omalauncher's style.toml sets
+   theme = "greek-noir" (an Omarchy theme); these are its colors.toml values.
+     coal   #171717  background        mist  #CCD0CF  foreground
+     ember  #F25623  accent            sage  #88A57D  active border
+   Shape: omalauncher widget defaults (style/defaults.toml): 2dp outlines,
+   6dp gaps, 0.88 opacity; tv.owl keys are frosted, radius 14. */
+
+:root {
+  --coal:        #171717;
+  --coal-deep:   #101010;   /* darker_background */
+  --coal-lift:   #222222;   /* lighter_background */
+  --coal-line:   #2a2a2a;   /* selection */
+  --coal-edge:   #525252;   /* bright black: outlines */
+  --ember:       #F25623;   /* accent */
+  --ember-hot:   #F56E0F;   /* selection_background */
+  --sage:        #88A57D;   /* active_border_color */
+  --mist:        #CCD0CF;   /* foreground */
+  --mist-bright: #dadedd;   /* light_foreground */
+  --mist-dim:    #959c95;   /* dark_foreground */
+  --muted:       #7d837d;
+  --olive:       #757864;   /* theme "yellow" */
+  --sand:        #aeab94;   /* theme "red" */
+  --amber:       #f0913a;   /* theme "orange" */
+  --grey-green:  #7b837b;   /* theme "cyan" */
+
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --font-read: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+
+  --gap: 6px;               /* widgets.gaps-in */
+  --edge: 2px;              /* widgets.border-width */
+  --key-radius: 14px;       /* tv.owl Key radius */
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--coal); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--coal);
+  color: var(--mist);
+  font: 400 16px/1.65 var(--font-read);
+  overflow-x: hidden;
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: var(--ember); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+code, pre, kbd { font-family: var(--font-mono); }
+::selection { background: var(--ember-hot); color: var(--coal); }
