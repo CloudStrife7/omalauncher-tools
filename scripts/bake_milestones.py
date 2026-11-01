@@ -29,6 +29,7 @@ PART_RE = re.compile(r"[-–—]\s*PART\b|\bPART\b", re.I)
 VERDICT_RE = re.compile(r"\*\*Verdict:\s*([^*.]+)", re.I)
 YOU_LABEL = re.compile(r"\byou\b", re.I)
 TOP_ITEMS = 5
+REDACT_FILE = ".milestones-redact"  # repo root: one word per line, hidden on the public page
 
 
 def parse_status(body):
@@ -130,6 +131,25 @@ def build(repo, milestones, issues, worth_text, last_commit, today):
             "days_since_commit": days, "milestones": out_ms}
 
 
+def redact(obj, words):
+    """Replace each listed word (case-insensitive, whole word) in every string of the page data.
+    A line 'word=replacement' sets the replacement; a bare word becomes 'someone'."""
+    if not words:
+        return obj
+    subs = {}
+    for w in words:
+        k, _, v = w.partition("=")
+        subs[k.strip().lower()] = v.strip() or "someone"
+    rx = re.compile(r"\b(" + "|".join(re.escape(k) for k in subs) + r")\b", re.I)
+    if isinstance(obj, str):
+        return rx.sub(lambda m: subs[m.group(1).lower()], obj)
+    if isinstance(obj, list):
+        return [redact(x, words) for x in obj]
+    if isinstance(obj, dict):
+        return {k: redact(v, words) for k, v in obj.items()}
+    return obj
+
+
 def gh_json(*args):
     r = subprocess.run(["gh", *args], capture_output=True, text=True, encoding="utf-8")
     if r.returncode:
@@ -160,6 +180,10 @@ def main():
     last = datetime.date.fromisoformat(c[0]["commit"]["committer"]["date"][:10]) if c else None
     today = datetime.date.today()
     data = build(a.repo, ms, issues, worth, last, today)
+    import pathlib as _p
+    rf = _p.Path(REDACT_FILE)
+    words = [w.strip() for w in rf.read_text(encoding="utf-8").splitlines() if w.strip() and not w.startswith("#")] if rf.exists() else []
+    data = redact(data, words)
     data["generated"] = today.strftime("%m-%d-%Y")
     import pathlib
     p = pathlib.Path(a.out)

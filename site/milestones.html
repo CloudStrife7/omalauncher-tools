@@ -58,7 +58,8 @@ h1{font-family:var(--ms-display);font-size:clamp(14px,3.4vw,26px);color:var(--ms
 .bar.pass .fill{background:var(--ms-pass)}
 .nobar{font-size:11px;color:var(--ms-none)}
 .master{margin-top:32px;overflow-x:auto}
-.master table{width:100%;border-collapse:collapse;min-width:600px}
+.master table{width:100%;border-collapse:collapse}
+@media (max-width:600px){.master th:nth-child(2),.master td:nth-child(2),.master th:nth-child(5),.master td:nth-child(5){display:none}.master .sec{white-space:normal}.master td,.master th{padding:12px 8px}}
 .master th{font-family:var(--ms-display);font-size:8px;letter-spacing:.2em;color:var(--ms-muted);text-align:left;padding:12px 16px;border-bottom:1px solid var(--ms-s3);white-space:nowrap}
 .master td{padding:16px;border-bottom:1px solid var(--ms-s2);vertical-align:middle}
 .master .sec{font-family:var(--ms-display);font-size:9px;white-space:nowrap;text-transform:uppercase}
@@ -126,6 +127,7 @@ details.item>summary{list-style:none;cursor:pointer;padding:12px 16px;display:fl
     return (m.closed || m.items.some(function (it) { return it.done > 0; })) ? ['part', 'IN PROGRESS'] : ['todo', 'NOT STARTED'];
   }
   function pill(s) { return el('i', 'pill ' + s[0], s[1]); }
+  function plain(t) { return String(t).replace(/\*\*|__|`/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); }
   function slug(t) { return 'm-' + t.toLowerCase().replace(/[^a-z0-9]+/g, '-'); }
 
   fetch('data/milestones.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
@@ -133,7 +135,7 @@ details.item>summary{list-style:none;cursor:pointer;padding:12px 16px;display:fl
     var src = el('div', 'srcbar'); src.append(el('span', 'dot'));
     var s1 = el('span', '', 'Baked '); s1.append(el('b', '', d.generated)); s1.append(' by scripts/bake_milestones.py'); src.append(s1, el('span', 'sp'), link(repoUrl + '/milestones', 'all milestones →'));
     var leg = el('div', 'legend');
-    [['pass', 'PROVEN', 'proof issue closed'], ['part', 'IN PROGRESS', 'some issues closed'], ['todo', 'NOT STARTED', 'nothing closed yet'], ['none', 'PARKED', 'later, not counted']].forEach(function (x) { var s = el('span'); s.append(pill([x[0], x[1]]), x[2]); leg.append(s); });
+    [['pass', 'PROVEN', 'proof issue closed'], ['part', 'IN PROGRESS', 'some work done'], ['todo', 'NOT STARTED', 'nothing closed yet'], ['none', 'PARKED', 'later, not counted']].forEach(function (x) { var s = el('span'); s.append(pill([x[0], x[1]]), x[2]); leg.append(s); });
     var meta = el('dl', 'meta');
     [['NEXT', d.next || '—'], ['WORTH', d.worth || 'not scored'], ['WHERE', d.repo]].forEach(function (x) { meta.append(el('dt', '', x[0]), el('dd', '', x[1])); });
     app.append(src, leg, meta);
@@ -166,7 +168,7 @@ details.item>summary{list-style:none;cursor:pointer;padding:12px 16px;display:fl
       var sm = el('summary'); sm.append(el('span', 'chev', '▸'), el('h2', '', m.title), pill(state(m)), el('span', 'sfrac', m.later ? m.open + ' parked' : m.closed + ' / ' + (m.open + m.closed) + ' · ' + pct(m) + '%'));
       det.append(sm);
       var bd = el('div', 'body');
-      if (m.description) bd.append(el('p', 'note', m.description));
+      if (m.description) bd.append(el('p', 'note', plain(m.description)));
       if (m.proof) { var pn = el('p', 'note'); var pb = el('b', '', m.proof.title); pn.append(pb, ' '); pn.append(link(m.proof.url, (m.proof.proven ? 'PROVEN · ' : 'open · ') + '#' + m.proof.number)); bd.append(pn); }
       m.items.forEach(function (it, k) {
         var g = el('details', 'item'); if (k === 0 && m.title === d.current) g.open = true;
@@ -174,7 +176,7 @@ details.item>summary{list-style:none;cursor:pointer;padding:12px 16px;display:fl
         s.append(el('span', 'ord', String(k + 1).padStart(2, '0')), el('span', 'nm', it.title), link(it.url, '#' + it.number), pill(frac >= 1 ? ['pass', 'DONE'] : frac > 0 ? ['part', 'IN PROGRESS'] : ['todo', 'NOT STARTED']));
         var mb = bar(100 * frac); mb.classList.add('mini'); s.append(mb, el('span', 'gfrac', it.done + ' / ' + it.total));
         g.append(s);
-        var ib = el('div', 'ib'); if (it.note) ib.append(el('p', 'note', it.note));
+        var ib = el('div', 'ib'); if (it.note) ib.append(el('p', 'note', plain(it.note)));
         var ul = el('ul', 'crit');
         it.rows.forEach(function (r) {
           var li = el('li', r.state); li.append(el('span', 'box', r.state === 'YES' ? '✓' : r.state === 'PART' ? '▮' : '☐'), el('span', 'txt', r.name), el('span', 'st ' + r.state, r.state), el('span', 'own' + (/you/i.test(r.owner) ? ' you' : ''), r.owner));
