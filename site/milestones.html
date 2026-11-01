@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!-- Master: !index/shared/templates/project-site/milestones.html. Copied into each project site by install.py.
+     Edit the master, then re-install. Theme lives in milestones-theme.css next to this page (the site's own tokens).
+     Data: data/milestones.json, written by scripts/bake_milestones.py at publish. Nothing here is hand-kept. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>omalauncher-tools Milestones</title>
+<link rel="stylesheet" href="milestones-theme.css">
+<style>
+:where(:root){
+  --ms-bg:#05080f; --ms-s1:#090d18; --ms-s2:#0e1525; --ms-s3:#1a2535;
+  --ms-accent:#c89420; --ms-accent2:#00e8ff; --ms-bone:#ddd8cc;
+  --ms-text:#c8d8e8; --ms-muted:#6b7f93; --ms-dim:#3d4f63;
+  --ms-pass:#63d69b; --ms-part:#e6b13d; --ms-none:#6b6f7a;
+  --ms-display:'Press Start 2P',monospace; --ms-mono:'Share Tech Mono',Consolas,monospace;
+  --ms-glow:0 0 24px color-mix(in srgb,var(--ms-accent) 55%,transparent);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ms-bg);color:var(--ms-text);font-family:var(--ms-mono);font-size:14px;line-height:1.6;overflow-x:hidden;padding:0 16px 56px}
+a{color:var(--ms-accent);text-decoration:none}
+.wrap{max-width:960px;margin:0 auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid var(--ms-s3)}
+.brand{font-family:var(--ms-display);font-size:11px;color:var(--ms-bone);letter-spacing:.12em}
+.brand .full{color:var(--ms-muted)}
+.topbar nav{display:flex;gap:16px;flex-wrap:wrap}
+.topbar nav a{font-family:var(--ms-display);font-size:8px;letter-spacing:.12em;color:var(--ms-muted);text-transform:uppercase}
+.topbar nav a.on{color:var(--ms-accent);text-shadow:var(--ms-glow)}
+.kicker{font-family:var(--ms-display);font-size:8px;letter-spacing:.2em;color:var(--ms-accent2);margin:32px 0 12px}
+h1{font-family:var(--ms-display);font-size:clamp(14px,3.4vw,26px);color:var(--ms-bone);margin:0;line-height:1.5;text-wrap:balance}
+.lede{color:var(--ms-muted);max-width:70ch;margin:14px 0 0;line-height:1.7}
+.lede b{color:var(--ms-text);font-weight:400}
+.you{color:var(--ms-accent2)}
+.srcbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ms-muted);border:1px solid var(--ms-s3);background:var(--ms-s1);padding:12px 16px;margin-top:24px}
+.srcbar .dot{width:8px;height:8px;border-radius:50%;background:var(--ms-pass);flex-shrink:0}
+.srcbar b{color:var(--ms-bone);font-weight:400}
+.srcbar .sp{flex:1}
+.gh{font-size:11px;color:var(--ms-accent);border:1px solid var(--ms-s3);padding:1px 5px;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:24px}
+.legend span{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--ms-muted)}
+.pill{font-family:var(--ms-display);font-size:7px;letter-spacing:.12em;padding:4px 6px;border:1px solid currentColor;white-space:nowrap;line-height:1.3;font-style:normal;display:inline-block}
+.pill.pass{color:var(--ms-pass)} .pill.part{color:var(--ms-part)} .pill.todo{color:var(--ms-accent2)} .pill.none{color:var(--ms-none)}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:12.5px;margin-top:24px;padding:12px 0;border-top:1px solid var(--ms-s3);border-bottom:1px solid var(--ms-s3)}
+.meta dt{font-family:var(--ms-display);font-size:7px;letter-spacing:.12em;color:var(--ms-dim);padding-top:4px}
+.meta dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.total{margin-top:32px;border:1px solid var(--ms-s3);background:var(--ms-s1);padding:32px}
+.total .lab{font-family:var(--ms-display);font-size:9px;letter-spacing:.2em;color:var(--ms-muted);text-transform:uppercase}
+.total .row{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-top:16px}
+.total .pct{font-family:var(--ms-display);font-size:clamp(30px,6vw,58px);color:var(--ms-accent);text-shadow:var(--ms-glow);line-height:1;font-variant-numeric:tabular-nums}
+.total .of{font-size:13px;color:var(--ms-muted);padding-bottom:6px}
+.total>.bar{margin-top:24px}
+.waiting{font-size:13px;color:var(--ms-muted);margin:16px 0 0}
+.waiting b{color:var(--ms-accent2);font-weight:400}
+.bar{height:14px;background:var(--ms-s2);border:1px solid var(--ms-s3);position:relative;overflow:hidden}
+.bar .fill{position:absolute;inset:0 auto 0 0;background:var(--ms-accent)}
+.bar.pass .fill{background:var(--ms-pass)}
+.nobar{font-size:11px;color:var(--ms-none)}
+.master{margin-top:32px;overflow-x:auto}
+.master table{width:100%;border-collapse:collapse}
+@media (max-width:600px){.master th:nth-child(2),.master td:nth-child(2),.master th:nth-child(5),.master td:nth-child(5){display:none}.master .sec{white-space:normal}.master td,.master th{padding:12px 8px}}
+.master th{font-family:var(--ms-display);font-size:8px;letter-spacing:.2em;color:var(--ms-muted);text-align:left;padding:12px 16px;border-bottom:1px solid var(--ms-s3);white-space:nowrap}
+.master td{padding:16px;border-bottom:1px solid var(--ms-s2);vertical-align:middle}
+.master .sec{font-family:var(--ms-display);font-size:9px;white-space:nowrap;text-transform:uppercase}
+.master .sec a{color:var(--ms-bone)}
+.master .barcell{width:34%;min-width:140px}
+.master .frac{font-size:12px;color:var(--ms-accent);white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.master .proof{font-size:11px;color:var(--ms-accent2)}
+details.blk{margin-top:24px;border:1px solid var(--ms-s3);background:var(--ms-s1)}
+details.blk>summary{list-style:none;cursor:pointer;padding:16px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+details>summary::-webkit-details-marker{display:none}
+details.blk[open]>summary{border-bottom:1px solid var(--ms-s3)}
+details.blk>summary h2{font-family:var(--ms-display);font-size:clamp(10px,1.6vw,14px);color:var(--ms-bone);margin:0;line-height:1.5;text-transform:uppercase}
+.chev{color:var(--ms-dim);display:inline-block;transition:transform .2s}
+details[open]>summary .chev{transform:rotate(90deg)}
+.sfrac{font-size:12px;color:var(--ms-accent);margin-left:auto;font-variant-numeric:tabular-nums}
+.body{padding:16px 24px 32px}
+.note{font-size:12px;color:var(--ms-muted);line-height:1.65;border-left:2px solid var(--ms-s3);padding-left:16px;margin:0 0 16px;white-space:pre-line}
+.note b{color:var(--ms-accent2);font-weight:400}
+details.item{margin-top:16px;border:1px solid var(--ms-s3);background:var(--ms-bg)}
+details.item>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.item .ord{font-family:var(--ms-display);font-size:8px;color:var(--ms-dim)}
+.item .nm{font-size:13px;color:var(--ms-accent2);min-width:0;overflow-wrap:anywhere;flex:1 1 200px}
+.item .gfrac{font-size:11px;color:var(--ms-accent);font-variant-numeric:tabular-nums}
+.item .mini{width:88px;height:8px;flex-shrink:0}
+.ib{padding:0 16px 16px}
+.crit{list-style:none;margin:0;padding:0}
+.crit li{display:flex;gap:16px;align-items:center;padding:6px 0;border-bottom:1px solid var(--ms-s2);font-size:12px}
+.crit li:last-child{border-bottom:0}
+.crit .box{width:1.2em;text-align:center;flex-shrink:0}
+.crit li.YES .box{color:var(--ms-pass)} .crit li.YES .txt{color:var(--ms-muted)}
+.crit li.PART .box{color:var(--ms-part)} .crit li.NO .box{color:var(--ms-dim)}
+.crit .txt{flex:1;min-width:0;overflow-wrap:anywhere;color:var(--ms-bone)}
+.crit .st{font-family:var(--ms-display);font-size:7px;letter-spacing:.12em;padding:3px 5px;border:1px solid currentColor}
+.crit .st.YES{color:var(--ms-pass)} .crit .st.PART{color:var(--ms-part)} .crit .st.NO{color:var(--ms-none)}
+.crit .own{font-size:11px;color:var(--ms-none);min-width:32px;text-align:right}
+.crit .own.you{color:var(--ms-accent2)}
+.rest{font-size:12px;color:var(--ms-muted);margin-top:16px}
+.foot{font-size:12px;color:var(--ms-dim);line-height:1.7;margin-top:40px}
+.foot code{color:var(--ms-muted)}
+.err{margin-top:32px;color:var(--ms-part)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand">omalauncher<b>-tools</b><span class="full"> · MILESTONES</span></div>
+    <nav><a href="index.html">Home</a><a href="workflow.html">Build Log</a><a href="milestones.html" class="on">Milestones</a></nav>
+  </header>
+  <p class="kicker">MILESTONES · SNAPSHOT FROM GITHUB</p>
+  <h1>omalauncher-tools</h1>
+  <p class="lede">Read from GitHub each time this site is published. Each milestone has one <b>Proof</b> issue: it is closed only when that thing really happened. Rows say where things stand and who they wait on: <b class="you">you</b> or me. <b>Nothing here is typed by hand.</b></p>
+  <div id="app"></div>
+</div>
+<script>
+(function () {
+  var app = document.getElementById('app');
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function link(href, text, cls) { var a = el('a', cls || 'gh', text); a.href = href; a.target = '_blank'; a.rel = 'noopener'; return a; }
+  function bar(pct, cls) { var b = el('div', 'bar' + (cls ? ' ' + cls : '')); var f = el('div', 'fill'); f.style.width = Math.max(0, Math.min(100, pct)) + '%'; b.append(f); return b; }
+  function pct(m) { var all = m.open + m.closed; return all ? Math.round(100 * m.closed / all) : 0; }
+  function state(m) {
+    if (m.later) return ['none', 'PARKED'];
+    if (m.proof && m.proof.proven) return ['pass', 'PROVEN'];
+    if (!(m.open + m.closed)) return ['none', 'NOT MEASURED'];
+    return (m.closed || m.items.some(function (it) { return it.done > 0; })) ? ['part', 'IN PROGRESS'] : ['todo', 'NOT STARTED'];
+  }
+  function pill(s) { return el('i', 'pill ' + s[0], s[1]); }
+  function plain(t) { return String(t).replace(/\*\*|__|`/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); }
+  function slug(t) { return 'm-' + t.toLowerCase().replace(/[^a-z0-9]+/g, '-'); }
+
+  fetch('data/milestones.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+    var repoUrl = 'https://github.com/' + d.repo;
+    var src = el('div', 'srcbar'); src.append(el('span', 'dot'));
+    var s1 = el('span', '', 'Baked '); s1.append(el('b', '', d.generated)); s1.append(' by scripts/bake_milestones.py'); src.append(s1, el('span', 'sp'), link(repoUrl + '/milestones', 'all milestones →'));
+    var leg = el('div', 'legend');
+    [['pass', 'PROVEN', 'proof issue closed'], ['part', 'IN PROGRESS', 'some work done'], ['todo', 'NOT STARTED', 'nothing closed yet'], ['none', 'PARKED', 'later, not counted']].forEach(function (x) { var s = el('span'); s.append(pill([x[0], x[1]]), x[2]); leg.append(s); });
+    var meta = el('dl', 'meta');
+    [['NEXT', d.next || '—'], ['WORTH', d.worth || 'not scored'], ['WHERE', d.repo]].forEach(function (x) { meta.append(el('dt', '', x[0]), el('dd', '', x[1])); });
+    app.append(src, leg, meta);
+
+    var cur = d.milestones.find(function (m) { return m.title === d.current; });
+    if (cur) {
+      var t = el('section', 'total'); t.append(el('div', 'lab', cur.title));
+      var row = el('div', 'row'); row.append(el('div', 'pct', pct(cur) + '%'), el('div', 'of', cur.closed + ' of ' + (cur.open + cur.closed) + ' issues closed · proof ' + (cur.proof ? (cur.proof.proven ? 'PROVEN' : 'NOT YET') : 'none')));
+      t.append(row, bar(pct(cur)));
+      var w = el('p', 'waiting'); var b = el('b', '', 'Waiting on you: ' + cur.you); w.append(b, cur.you ? ' issues labelled for you.' : ' nothing right now.');
+      if (d.days_since_commit != null && /two weeks|daily use/i.test(cur.title)) w.append(' Day ' + Math.min(14, d.days_since_commit) + ' of 14 with no code change.');
+      t.append(w); app.append(t);
+    }
+
+    var mt = el('div', 'master'), tb = el('table'); mt.append(tb);
+    tb.innerHTML = '<thead><tr><th>Milestone</th><th>Progress</th><th style="text-align:right">Done</th><th>State</th><th>Proof</th></tr></thead>';
+    var body = el('tbody'); tb.append(body);
+    d.milestones.forEach(function (m) {
+      var tr = el('tr'); var c1 = el('td', 'sec'); var a = el('a', '', m.title); a.href = '#' + slug(m.title); c1.append(a);
+      var c2 = el('td', 'barcell'); c2.append(m.later ? el('span', 'nobar', 'not counted') : bar(pct(m), state(m)[0] === 'pass' ? 'pass' : ''));
+      var c3 = el('td', 'frac', m.later ? m.open + ' parked' : m.closed + ' / ' + (m.open + m.closed));
+      var c4 = el('td'); c4.append(pill(state(m)));
+      var c5 = el('td', 'proof'); if (m.proof) c5.append(link(m.proof.url, '#' + m.proof.number, 'gh')); else c5.textContent = '—';
+      tr.append(c1, c2, c3, c4, c5); body.append(tr);
+    });
+    app.append(mt);
+
+    d.milestones.forEach(function (m, i) {
+      var det = el('details', 'blk'); det.id = slug(m.title); if (m.title === d.current) det.open = true;
+      var sm = el('summary'); sm.append(el('span', 'chev', '▸'), el('h2', '', m.title), pill(state(m)), el('span', 'sfrac', m.later ? m.open + ' parked' : m.closed + ' / ' + (m.open + m.closed) + ' · ' + pct(m) + '%'));
+      det.append(sm);
+      var bd = el('div', 'body');
+      if (m.description) bd.append(el('p', 'note', plain(m.description)));
+      if (m.proof) { var pn = el('p', 'note'); var pb = el('b', '', m.proof.title); pn.append(pb, ' '); pn.append(link(m.proof.url, (m.proof.proven ? 'PROVEN · ' : 'open · ') + '#' + m.proof.number)); bd.append(pn); }
+      m.items.forEach(function (it, k) {
+        var g = el('details', 'item'); if (k === 0 && m.title === d.current) g.open = true;
+        var s = el('summary'); var frac = it.total ? it.done / it.total : 0;
+        s.append(el('span', 'ord', String(k + 1).padStart(2, '0')), el('span', 'nm', it.title), link(it.url, '#' + it.number), pill(frac >= 1 ? ['pass', 'DONE'] : frac > 0 ? ['part', 'IN PROGRESS'] : ['todo', 'NOT STARTED']));
+        var mb = bar(100 * frac); mb.classList.add('mini'); s.append(mb, el('span', 'gfrac', it.done + ' / ' + it.total));
+        g.append(s);
+        var ib = el('div', 'ib'); if (it.note) ib.append(el('p', 'note', plain(it.note)));
+        var ul = el('ul', 'crit');
+        it.rows.forEach(function (r) {
+          var li = el('li', r.state); li.append(el('span', 'box', r.state === 'YES' ? '✓' : r.state === 'PART' ? '▮' : '☐'), el('span', 'txt', r.name), el('span', 'st ' + r.state, r.state), el('span', 'own' + (/you/i.test(r.owner) ? ' you' : ''), r.owner));
+          ul.append(li);
+        });
+        ib.append(ul); g.append(ib); bd.append(g);
+      });
+      var rest = el('div', 'rest');
+      var extra = m.more_items ? m.more_items + ' more items with Status rows. ' : '';
+      rest.append(extra + (m.items.length ? 'Issues without Status rows count in the bar only. ' : 'No issue here has Status rows yet; the bar counts closed issues. '));
+      rest.append(link(m.url, 'open on GitHub →')); bd.append(rest);
+      det.append(bd); app.append(det);
+    });
+    var f = el('p', 'foot'); f.innerHTML = 'Status lives in the <code>## Status</code> block of each issue and in each milestone\'s Proof issue: change it there, not here. The bar is closed issues over all issues; an item\'s bar is its Status rows, PART counts half.';
+    app.append(f);
+  }).catch(function () { app.append(el('p', 'err', 'Milestone data is missing. Run scripts/bake_milestones.py and publish again.')); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+/* omalauncher-tools tokens (styles.css: the greek-noir home screen) mapped onto the shared milestones page.
+   Not overwritten by install.py. */
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap");
+@import url("styles.css");
+:root{
+  --ms-bg:var(--coal); --ms-s1:var(--coal-deep); --ms-s2:var(--coal-lift); --ms-s3:var(--coal-edge);
+  --ms-accent:var(--ember); --ms-accent2:var(--sage); --ms-bone:var(--mist-bright);
+  --ms-text:var(--mist); --ms-muted:var(--mist-dim); --ms-dim:var(--muted);
+  --ms-pass:var(--sage); --ms-part:var(--amber); --ms-none:var(--olive);
+  --ms-display:var(--font-mono); --ms-mono:var(--font-mono);
+  --ms-glow:0 0 18px color-mix(in srgb,var(--ember) 45%,transparent);
+}
+/* The template's sizes are set for a pixel font; a plain mono reads better a step up. */
+.brand{font-weight:700}
+.brand b{color:var(--ember);font-weight:700}
+.topbar nav a{font-size:12px;letter-spacing:.08em}
